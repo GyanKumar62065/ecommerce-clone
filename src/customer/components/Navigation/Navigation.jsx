@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
-import { Avatar } from "@mui/material";
+import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
@@ -8,6 +8,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { deepOrange } from "@mui/material/colors";
+import { useNavigate } from "react-router-dom";
 
 const navigation = {
   categories: [
@@ -144,6 +145,8 @@ function classNames(...classes) {
 }
 
 export default function Navigation() {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
 
   const [openAuthModal, setOpenAuthModal] = useState(false);
@@ -155,7 +158,7 @@ export default function Navigation() {
     setAnchorE1(event.currentTarget);
   };
 
-  const handelCloseMenu = (event) => {
+  const handelCloseUserMenu = () => {
     setAnchorE1(null);
   };
 
@@ -164,6 +167,12 @@ export default function Navigation() {
   };
   const handelClose = () => {
     setOpenAuthModal(false);
+  };
+
+  const handleCategoryClick = (category, section, item) => {
+    const itemName = item.name.toLowerCase();
+
+    navigate(`/${category.id}/${section.id}/${itemName}`);
   };
 
   return (
@@ -344,13 +353,13 @@ export default function Navigation() {
         </Dialog>
       </Transition.Root>
 
-      <header className="relative bg-white">
+      <header className="relative bg-white border-b border-gray-200">
         <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
           Get free delivery on orders over $100
         </p>
 
-        <nav aria-label="Top" className="mx-auto max-w-7xl ">
-          <div className="border-b border-gray-200">
+        <nav aria-label="Top" className="mx-auto max-w-7xl  ">
+          <div className=" ">
             <div className="flex h-16 items-center">
               <button
                 type="button"
@@ -465,12 +474,18 @@ export default function Navigation() {
                                                 key={item.name}
                                                 className="flex"
                                               >
-                                                <a
-                                                  href={item.href}
-                                                  className="hover:text-gray-800"
+                                                <p
+                                                  onClick={() =>
+                                                    handleCategoryClick(
+                                                      category,
+                                                      section,
+                                                      item
+                                                    )
+                                                  }
+                                                  className="hover:text-gray-800 cursor-pointer"
                                                 >
                                                   {item.name}
-                                                </a>
+                                                </p>
                                               </li>
                                             ))}
                                           </ul>
@@ -500,21 +515,51 @@ export default function Navigation() {
               </Popover.Group>
 
               <div className="ml-auto flex items-center">
-                <div className="hidden lg:ml-8 lg:flex">
-                  <Avatar
-                    className="text-white"
-                    onClick={handelUserClick}
-                    aria-controls={open ? "basic-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                    sx={{
-                      bgcolor: deepOrange[500],
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                  >
-                    G
-                  </Avatar>
+                <div>
+                  {true ? (
+                    <div className="hidden lg:ml-8 lg:flex">
+                      <Avatar
+                        className="text-white"
+                        onClick={handelUserClick}
+                        aria-controls={open ? "basic-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                        sx={{
+                          bgcolor: deepOrange[500],
+                          color: "white",
+                          cursor: "pointer",
+                        }}
+                      >
+                        G
+                      </Avatar>
+
+                      <Menu
+                        id="basic-menu"
+                        anchorEl={anchorE1}
+                        open={openUserMenu}
+                        onClose={handelCloseUserMenu}
+                        MenuListProps={{
+                          "aria-labelledby": "basic-button",
+                        }}
+                      >
+                        <MenuItem onClick={handelCloseUserMenu}>
+                          Profile
+                        </MenuItem>
+                        <MenuItem onClick={() => navigate("/account/order")}>
+                          My Orders
+                        </MenuItem>
+                        <MenuItem>Logout</MenuItem>
+                      </Menu>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={handelOpen}
+                      sx={{ color: "rgb(55 65 81)" }}
+                      className="text-sm font-medium text-gray-700 hover:text-gray-900"
+                    >
+                      Sign In
+                    </Button>
+                  )}
                 </div>
 
                 {/* Search */}
